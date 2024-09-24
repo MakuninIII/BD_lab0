@@ -4,7 +4,7 @@ def get_connection():
     conn = psycopg2.connect(
         dbname="Music",
         user="postgres",
-        password="",
+        password=" ",
         host="localhost"
     )
     return conn
