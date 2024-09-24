@@ -3,17 +3,19 @@ from psycopg2 import OperationalError
 
 ###  Миграция для создания таблиц
 
-def create_tables():
-    commands = (
-        """
+       
+conn = psycopg2.connect(dbname="Music", user="postgres", password=" ", host="localhost")
+cur = conn.cursor()
+cur.execute("""
         CREATE TABLE Artist (
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
             country VARCHAR(255) NOT NULL,
             debut_year INT 
         )
-        """,
-        """
+        """)  
+  
+cur.execute("""
         CREATE TABLE Song (
             id SERIAL PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
@@ -24,14 +26,16 @@ def create_tables():
                 REFERENCES Artist (id)
                 ON UPDATE CASCADE ON DELETE CASCADE
         )
-        """,
-        """
+        """)
+
+cur.execute("""
         CREATE TABLE Genre (
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL
         )
-        """,
-        """
+        """)
+
+cur.execute("""
         CREATE TABLE Song_Genre (
             song_id INTEGER NOT NULL,
             genre_id INTEGER NOT NULL,
@@ -43,23 +47,19 @@ def create_tables():
                 REFERENCES Genre (id)
                 ON UPDATE CASCADE ON DELETE CASCADE
         )
-        """
-    )
-       
-    conn = psycopg2.connect(dbname="Music", user="postgres", password=" ", host="localhost")
-    cur = conn.cursor()
-    for command in commands:
-        cur.execute(command)
-    cur.close()
-    conn.commit()
-    conn.close()
+        """)
 
+cur.close()
+conn.commit()
+conn.close()
 
 
 ### Миграция для первоначального наполнения данных
 
-def insert_initial_data():
-    artist_data = [
+conn = psycopg2.connect(dbname="Music", user="postgres", password=" ", host="localhost")
+cur = conn.cursor()
+
+artist_data = [
         ("Metallica", "USA", 1981),
         ("Iron Maiden", "UK", 1975),
         ("Pink Floyd", "UK", 1965),
@@ -71,8 +71,10 @@ def insert_initial_data():
         ("Pantera", "USA", 1981),
         ("Slipknot", "USA", 1995)
     ]
-    
-    song_data = [
+
+cur.executemany("INSERT INTO Artist (name, country, debut_year) VALUES (%s, %s, %s)", artist_data)
+
+song_data = [
         ("Unforgiven", 1, 1991, 388),
         ("The Trooper", 2, 1983, 256),
         ("Smells Like Teen Spirit", 4, 1991, 301),
@@ -84,8 +86,10 @@ def insert_initial_data():
         ("Duality", 10, 2004, 240),
         ("Sic", 10, 1999, 193)
     ]
-    
-    genre_data = [
+
+cur.executemany("INSERT INTO Song (title, artist_id, release_year, duration) VALUES (%s, %s, %s, %s)", song_data)
+
+genre_data = [
         ("Metal",),
         ("Heavy Metal",),
         ("Hard Rock",),
@@ -97,8 +101,10 @@ def insert_initial_data():
         ("Nu Metal",),
         ("Jazz",)
     ]
-    
-    song_genre_data = [
+
+cur.executemany("INSERT INTO Genre (name) VALUES (%s)", genre_data)
+
+song_genre_data = [
         (1, 1),  # Unforgiven - Metal
         (1, 3),  # Unforgiven - Hard Rock
         (2, 2),  # The Trooper - Heavy Metal
@@ -115,20 +121,12 @@ def insert_initial_data():
         (9, 1),  # Duality - Metal
         (10, 9), # Sic - Nu Metal
         (10, 1)  # Sic - Metal
-    ]   
+    ]
+    
+cur.executemany("INSERT INTO Song_Genre (song_id, genre_id) VALUES (%s, %s)", song_genre_data)
 
-    conn = psycopg2.connect(dbname="Music", user="postgres", password=" ", host="localhost")
-    cur = conn.cursor()
+cur.close()
+conn.commit()
+conn.close()
 
-    cur.executemany("INSERT INTO Artist (name, country, debut_year) VALUES (%s, %s, %s)", artist_data)
-    cur.executemany("INSERT INTO Song (title, artist_id, release_year, duration) VALUES (%s, %s, %s, %s)", song_data)
-    cur.executemany("INSERT INTO Genre (name) VALUES (%s)", genre_data)
-    cur.executemany("INSERT INTO Song_Genre (song_id, genre_id) VALUES (%s, %s)", song_genre_data)
 
-    cur.close()
-    conn.commit()
-    conn.close()
-
-if __name__ == '__main__':
-    # create_tables()
-    insert_initial_data()
