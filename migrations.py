@@ -1,9 +1,8 @@
 import psycopg2
-from psycopg2 import OperationalError
+
 
 ###  Миграция для создания таблиц
-
-       
+      
 conn = psycopg2.connect(dbname="Music", user="postgres", password=" ", host="localhost")
 cur = conn.cursor()
 cur.execute("""
@@ -49,8 +48,8 @@ cur.execute("""
         )
         """)
 
-cur.close()
 conn.commit()
+cur.close()
 conn.close()
 
 
@@ -125,8 +124,8 @@ song_genre_data = [
     
 cur.executemany("INSERT INTO Song_Genre (song_id, genre_id) VALUES (%s, %s)", song_genre_data)
 
-cur.close()
 conn.commit()
+cur.close()
 conn.close()
 
 
