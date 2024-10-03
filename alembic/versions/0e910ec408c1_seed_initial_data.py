@@ -19,7 +19,7 @@ def upgrade():
         sa.table('artist',
             sa.column('name', sa.String),
             sa.column('country', sa.String),
-            sa.column('debut_year', sa.Integer)
+            sa.column('debut_year', sa.SmallInteger)
         ),
         [
             {'name': 'Metallica', 'country': 'USA', 'debut_year': 1981},
@@ -56,8 +56,8 @@ def upgrade():
     op.bulk_insert(
         sa.table('song',
             sa.column('title', sa.String),
-            sa.column('release_year', sa.Integer),
-            sa.column('duration', sa.Integer),
+            sa.column('release_year', sa.SmallInteger),
+            sa.column('duration', sa.SmallInteger),
             sa.column('artist_id', sa.Integer)
         ),
         [
@@ -81,7 +81,7 @@ def upgrade():
             sa.column('genre_id', sa.Integer)
         ),
         [
-             {'song_id': 1, 'genre_id': 1},
+            {'song_id': 1, 'genre_id': 1},
             {'song_id': 1, 'genre_id': 3},
             {'song_id': 2, 'genre_id': 2},
             {'song_id': 3, 'genre_id': 5},
