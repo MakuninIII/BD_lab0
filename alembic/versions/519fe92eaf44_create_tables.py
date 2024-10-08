@@ -21,7 +21,7 @@ def upgrade():
         sa.Column('name', sa.String(255), nullable=False),
         sa.Column('country', sa.String(255), nullable=False),
         sa.Column('debut_year', sa.SmallInteger, nullable=False),
-        sa.CheckConstraint('debut_year >= 0', name='check_artist_debut_year')
+        sa.CheckConstraint('debut_year >= 1860 AND debut_year <= EXCTRACT(YEAR FROM CURRENT_YEAR)', name='check_artist_debut_year')
     )
 
     op.create_table(
@@ -31,7 +31,7 @@ def upgrade():
         sa.Column('release_year', sa.SmallInteger, nullable=False),
         sa.Column('duration', sa.SmallInteger, nullable=False),
         sa.Column('artist_id', sa.Integer, sa.ForeignKey('artist.id', onupdate="CASCADE", ondelete="CASCADE"), nullable=False),
-        sa.CheckConstraint('release_year >= 0', name='check_song_release_year'),
+        sa.CheckConstraint('release_year >= 1860 release_year <= EXCTRACT(YEAR FROM CURRENT_YEAR)', name='check_song_release_year'),
         sa.CheckConstraint('duration >= 0', name='check_song_duration')
     )
 
