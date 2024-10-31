@@ -110,6 +110,7 @@ def upgrade():
         ]
     )
 
+
     op.execute("SELECT setval(pg_get_serial_sequence('artist', 'id'), (SELECT MAX(id) FROM artist))")
     op.execute("SELECT setval(pg_get_serial_sequence('genre', 'id'), (SELECT MAX(id) FROM genre))")
     op.execute("SELECT setval(pg_get_serial_sequence('song', 'id'), (SELECT MAX(id) FROM song))")

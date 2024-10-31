@@ -121,11 +121,16 @@ def ArtistUpdate(conn):
     
     current_name, current_country, current_debut_year = artist
 
-    
-    name = input(f"Enter new artist name (or leave empty to keep current - '{current_name}'): ")
-    if not name:
-        name = current_name
-
+    while True:
+        name = input(f"Enter new artist name (or leave empty to keep current - '{current_name}'): ")
+        if not name:
+            name = current_name
+            break
+        elif name.strip() == '':
+            print("Error: country should only contain letters.")
+        else:
+            break
+        
     while True:
         country = input(f"Enter new artist country (or leave empty to keep current - '{current_country}'): ")
         if not country:

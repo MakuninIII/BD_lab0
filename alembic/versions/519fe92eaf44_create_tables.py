@@ -54,6 +54,7 @@ def upgrade():
         sa.PrimaryKeyConstraint('song_id', 'genre_id')
     )
 
+
 def downgrade():
     op.drop_table('song_genre')
     op.drop_table('genre')
