@@ -16,18 +16,12 @@ def get_connection():
 def ArtistCreate(conn):
     while True:
         name = input("Enter artist name: ")
+        name = name.strip()
         
         if not name:
             print("Error: name cannot be empty.")
             continue
-        
-        cur = conn.cursor()
-        cur.execute("SELECT id FROM Artist WHERE name = %s", (name,))
-        if cur.fetchone() is not None:
-            print("Error: An artist with this name already exists. Please enter a unique name.")
-            cur.close()
         else:
-            cur.close()
             break
 
     while True:
@@ -126,11 +120,12 @@ def ArtistUpdate(conn):
         if not name:
             name = current_name
             break
-        elif name.strip() == '':
-            print("Error: country should only contain letters.")
+        elif name.strip() == "":
+            print("Error: name can't be empty.")
         else:
+            name = name.strip()
             break
-        
+
     while True:
         country = input(f"Enter new artist country (or leave empty to keep current - '{current_country}'): ")
         if not country:
@@ -244,11 +239,13 @@ def ArtistSearch(conn, name=None, country=None, debut_year=None, limit=5, offset
     params = []
 
     if name is not None:
-        query += " AND name LIKE %s"
-        params.append(f"%{name}%")
+        query += " AND (name LIKE %s OR name LIKE %s)"
+        params.append(f"%{name.lower()}%")
+        params.append(f"%{name.upper()}%")
     if country is not None:
-        query += " AND country = %s"
-        params.append(country)
+        query += " AND (country = %s OR country = %s)"
+        params.append(country.upper())
+        params.append(country.lower())
     if debut_year is not None:
         query += " AND debut_year = %s"
         params.append(debut_year)
