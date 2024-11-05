@@ -239,14 +239,11 @@ def ArtistSearch(conn, name=None, country=None, debut_year=None, limit=5, offset
     params = []
 
     if name is not None:
-        query += " AND (name LIKE %s OR name LIKE %s OR name LIKE %s)"
+        query += " AND name ILIKE %s"
         params.append(f"%{name.lower()}%")
-        params.append(f"%{name.upper()}%")
-        params.append(f"%{name.title()}%")
     if country is not None:
-        query += " AND (country = %s OR country = %s)"
-        params.append(country.upper())
-        params.append(country.lower())
+        query += " AND LOWER(country) = LOWER(%s)"
+        params.append(country)
     if debut_year is not None:
         query += " AND debut_year = %s"
         params.append(debut_year)
