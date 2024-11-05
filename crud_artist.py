@@ -239,9 +239,10 @@ def ArtistSearch(conn, name=None, country=None, debut_year=None, limit=5, offset
     params = []
 
     if name is not None:
-        query += " AND (name LIKE %s OR name LIKE %s)"
+        query += " AND (name LIKE %s OR name LIKE %s OR name LIKE %s)"
         params.append(f"%{name.lower()}%")
         params.append(f"%{name.upper()}%")
+        params.append(f"%{name.title()}%")
     if country is not None:
         query += " AND (country = %s OR country = %s)"
         params.append(country.upper())
@@ -299,7 +300,7 @@ if __name__ == "__main__":
         elif choice == '6':
             ArtistDeleteMany(conn)
         elif choice == '7':
-            name = input("Enter name (or press Enter to skip): ") or None
+            name = input(str("Enter name (or press Enter to skip): ")) or None
             country = input("Enter artist's country (or press Enter to skip): ") or None
             debut_year = input("Enter debut year (or press Enter to skip): ") or None
             
