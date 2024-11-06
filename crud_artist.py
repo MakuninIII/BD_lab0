@@ -160,10 +160,10 @@ def ArtistUpdate(conn):
     conn.commit()
     if cur.rowcount:
         print(f"Artist with ID {artist_id} updated successfully.")
-        cur.execute("SELECT name, country, debut_year FROM Artist WHERE id = %s", (artist_id,))
+        cur.execute("SELECT * FROM Artist WHERE id = %s", (artist_id,))
         updated_artist = cur.fetchone()
         table = PrettyTable()
-        table.field_names = ["Name", "Country", "Debut Year"]
+        table.field_names = ["ID", "Name", "Country", "Debut Year"]
         table.add_row(updated_artist)
         print(f"Updated artist data: \n{table}")
     else:
@@ -243,7 +243,7 @@ def ArtistSearch(conn, name=None, country=None, debut_year=None, limit=5, offset
         params.append(f"%{name.lower()}%")
     if country is not None:
         query += " AND LOWER(country) = LOWER(%s)"
-        params.append(country)
+        params.append(country.strip())
     if debut_year is not None:
         query += " AND debut_year = %s"
         params.append(debut_year)
@@ -300,13 +300,31 @@ if __name__ == "__main__":
             name = input(str("Enter name (or press Enter to skip): ")) or None
             country = input("Enter artist's country (or press Enter to skip): ") or None
             debut_year = input("Enter debut year (or press Enter to skip): ") or None
+            try:
+                limit_count = input("Enter number of output results (default 5): ")
+                if limit_count:
+                    limit_count = int(limit_count)
+                    if limit_count < 0:
+                        limit_count = None
+                        print("Limit can't be negative. The default value (5) has been assigned.")
+                limit_count = int(limit_count) if limit_count else 5
+            except ValueError:
+                print("Invalid input. The default value (5) has been assigned.")
+                limit_count = 5
             
-            limit_count = input("Enter number of output results (default 5): ")
-            limit_count = int(limit_count) if limit_count else 5
-            
-            offset_count = input("Enter offset (default 0): ")
-            offset_count = int(offset_count) if offset_count else 0
+            try:
+                offset_count = input("Enter offset (default 0): ")
+                if offset_count:
+                    offset_count = int(offset_count)
+                    if int(offset_count) < 0:
+                        offset_count = None
+                        print("Offset can't be negative. The default value (0) has been assigned.")
+                offset_count = int(offset_count) if offset_count else 0
+            except ValueError:
+                print("Invalid input. The default value (0) has been assigned.")
+                offset_count = 0
 
+            time.sleep(0.5)
             ArtistSearch(conn, name, country, debut_year, limit_count, offset_count)
         elif choice == '8':
             break
