@@ -243,7 +243,7 @@ def ArtistSearch(conn, name=None, country=None, debut_year=None, limit=5, offset
         params.append(f"%{name.lower()}%")
     if country is not None:
         query += " AND LOWER(country) = LOWER(%s)"
-        params.append(country.strip())
+        params.append(country)
     if debut_year is not None:
         query += " AND debut_year = %s"
         params.append(debut_year)
@@ -297,8 +297,8 @@ if __name__ == "__main__":
         elif choice == '6':
             ArtistDeleteMany(conn)
         elif choice == '7':
-            name = input(str("Enter name (or press Enter to skip): ")) or None
-            country = input("Enter artist's country (or press Enter to skip): ") or None
+            name = input(str("Enter name (or press Enter to skip): ")).strip() or None
+            country = input("Enter artist's country (or press Enter to skip): ").strip() or None
             debut_year = input("Enter debut year (or press Enter to skip): ").strip() or None
             try:
                 limit_count = input("Enter number of output results (default 5): ")
