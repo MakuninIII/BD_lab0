@@ -299,7 +299,7 @@ if __name__ == "__main__":
         elif choice == '7':
             name = input(str("Enter name (or press Enter to skip): ")) or None
             country = input("Enter artist's country (or press Enter to skip): ") or None
-            debut_year = input("Enter debut year (or press Enter to skip): ") or None
+            debut_year = input("Enter debut year (or press Enter to skip): ").strip() or None
             try:
                 limit_count = input("Enter number of output results (default 5): ")
                 if limit_count:
