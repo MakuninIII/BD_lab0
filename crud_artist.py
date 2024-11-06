@@ -208,7 +208,7 @@ def ArtistDeleteMany(conn):
             print("Error: Please enter valid artist IDs separated by commas. Only numeric IDs are allowed.")
 
     cur = conn.cursor()
-    cur.execute("SELECT id FROM Artist WHERE id IN %s", (tuple(artist_ids),))
+    cur.execute("SELECT id FROM Artist WHERE id = any(%s)", ([artist_ids],))
     existing_ids = [row[0] for row in cur.fetchall()]
 
     if not existing_ids:
@@ -217,7 +217,7 @@ def ArtistDeleteMany(conn):
         time.sleep(1)
         return
 
-    cur.execute("DELETE FROM Artist WHERE id IN %s", (tuple(existing_ids),))
+    cur.execute("DELETE FROM Artist WHERE id = any(%s)", ([existing_ids],))
     conn.commit()
 
     not_found_ids = set(artist_ids) - set(existing_ids)
