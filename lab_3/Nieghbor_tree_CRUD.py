@@ -40,10 +40,11 @@ def add_leaf(conn, title, parent_id):
         return
 
     with conn.cursor() as cur:
+        title = title.strip()
         try:
             cur.execute(
                 "INSERT INTO neighbor_tree (title, parent_id) VALUES (%s, %s) RETURNING id",
-                (title.split(), parent_id)
+                (title, parent_id)
             )
             new_id = cur.fetchone()[0]
             conn.commit()
