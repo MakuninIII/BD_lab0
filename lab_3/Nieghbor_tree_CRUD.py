@@ -21,7 +21,7 @@ def print_tree(conn, node_id, level=0):
             print('-------------------------------------------')
             print(f"{node[1]} (ID: {node[0]})")
         else:
-            print(" " * (level * 4) + f"└── {node[1]} (ID: {node[0]})")
+            print("|   " * (level) + f"└── {node[1]} (ID: {node[0]})")
 
         cur.execute("SELECT id FROM neighbor_tree WHERE parent_id = %s", (node_id,))
         children = cur.fetchall()
@@ -250,7 +250,7 @@ if __name__ == "__main__":
                     parent_id = input("Enter parent ID: ")
                     try:
                         new_id = add_leaf(conn, title, int(parent_id))
-                        print(f"Leaf added with ID: {new_id}")
+                        # print(f"Leaf added with ID: {new_id}")
                     except ValueError:
                         print("Invalid parent ID. Please enter a valid number.")
 
