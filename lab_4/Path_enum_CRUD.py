@@ -351,7 +351,6 @@ if __name__ == "__main__":
                         print("Invalid node ID. Please enter a valid number.")
 
                 elif choice == '9':
-                    node_id = input("Enter node ID to print tree: ")
                     print_tree(conn, 1)
 
                 elif choice == '10':
