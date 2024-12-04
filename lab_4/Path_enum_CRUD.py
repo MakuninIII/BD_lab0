@@ -124,6 +124,9 @@ def delete_subtree(conn, node_id):
 
 # 4. Удаление узла без поддерева
 def delete_node_without_subtree(conn, node_id):
+    if node_id == 1:
+        print(f"Error: Node ID 1 is root, so the subtree cannot be reassigned.")
+        return
     with conn.cursor() as cur:
         try:
             cur.execute("SELECT path FROM path_enum WHERE id = %s", (node_id,))
@@ -282,7 +285,8 @@ if __name__ == "__main__":
                 print("6. Get Direct Parent")
                 print("7. Get All Descendants")
                 print("8. Get All Parents")
-                print("9. Exit")
+                print("9. Print Tree")
+                print("10. Exit")
                 
                 choice = input("Enter your choice: ")
                 
@@ -344,6 +348,10 @@ if __name__ == "__main__":
                         print("Invalid node ID. Please enter a valid number.")
 
                 elif choice == '9':
+                    node_id = input("Enter node ID to print tree: ")
+                    print_tree(conn, 1)
+                    
+                elif choice == '10':
                     break
                 
                 else:
