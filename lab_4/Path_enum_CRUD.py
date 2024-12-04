@@ -101,6 +101,9 @@ def delete_leaf(conn, node_id):
 
 # 3. Удаление поддерева
 def delete_subtree(conn, node_id):
+    if node_id == 1:
+        print(f"Error: You can't delete the entire tree.")
+        return
     with conn.cursor() as cur:
         try:
             cur.execute("SELECT path FROM path_enum WHERE id = %s", (node_id,))
@@ -350,7 +353,7 @@ if __name__ == "__main__":
                 elif choice == '9':
                     node_id = input("Enter node ID to print tree: ")
                     print_tree(conn, 1)
-                    
+
                 elif choice == '10':
                     break
                 
