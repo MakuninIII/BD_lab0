@@ -253,7 +253,10 @@ def get_all_parents(conn, node_id):
             for i, parent in enumerate(parents):
                 is_last = (i == len(parents) - 1)
                 prefix = "|   " if i < len(parents) - 1 else "    "
-                print(f"{' ' * (i * 4)}└── {parent[1]} (ID: {parent[0]}, Path: {parent[2]})")
+                if i == 0:
+                    print(f"{parent[1]} (ID: {parent[0]})")
+                else:
+                    print(f"{' ' * (i * 4)}└── {parent[1]} (ID: {parent[0]})")
         except psycopg2.Error as e:
             print("Error retrieving all parents:", e)
 
