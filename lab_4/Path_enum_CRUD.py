@@ -59,7 +59,7 @@ def add_leaf(conn, title, parent_id):
             
             cur.execute(
                 "INSERT INTO path_enum (title, path) VALUES (%s, %s) RETURNING id",
-                (title, parent_path[0])
+                (title.strip(), parent_path[0])
             )
             new_id = cur.fetchone()[0]
             
@@ -298,7 +298,8 @@ if __name__ == "__main__":
                 print("10. Exit")
                 
                 choice = input("Enter your choice: ")
-                
+                choice = choice.strip()
+
                 if choice == '1':
                     title = input("Enter title of the new leaf: ")
                     parent_id = input("Enter parent ID: ")
