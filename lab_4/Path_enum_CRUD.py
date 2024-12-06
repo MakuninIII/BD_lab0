@@ -101,9 +101,6 @@ def delete_leaf(conn, node_id):
 
 # 3. Удаление поддерева
 def delete_subtree(conn, node_id):
-    if node_id == 1:
-        print(f"Error: You can't delete the entire tree.")
-        return
     with conn.cursor() as cur:
         try:
             cur.execute("SELECT path FROM path_enum WHERE id = %s", (node_id,))
@@ -113,23 +110,26 @@ def delete_subtree(conn, node_id):
                 print(f"Node with ID {node_id} does not exist.")
                 return
             
-            path = row[0]            
-            cur.execute("""
-                DELETE FROM path_enum
-                WHERE path LIKE %s
-            """, (f"{path}%",))
-            
-            conn.commit()
-            print(f"Subtree with root ID {node_id} deleted successfully.")
+            cur.execute("SELECT id FROM path_enum WHERE path LIKE %s", (f"%/{node_id}/%",))
+            result_ = cur.fetchone()
+            if not result_:
+                print(f"Error: Node ID {node_id} is root! You can't delete the entire tree.")
+                return
+            else:
+                path = row[0]            
+                cur.execute("""
+                    DELETE FROM path_enum
+                    WHERE path LIKE %s
+                """, (f"{path}%",))
+                
+                conn.commit()
+                print(f"Subtree with root ID {node_id} deleted successfully.")
         except psycopg2.Error as e:
             print("Error deleting subtree:", e)
             conn.rollback()
 
 # 4. Удаление узла без поддерева
 def delete_node_without_subtree(conn, node_id):
-    if node_id == 1:
-        print(f"Error: Node ID 1 is root, so the subtree cannot be reassigned.")
-        return
     with conn.cursor() as cur:
         try:
             cur.execute("SELECT path FROM path_enum WHERE id = %s", (node_id,))
@@ -139,15 +139,21 @@ def delete_node_without_subtree(conn, node_id):
                 return
             node_path = result[0]
 
-            cur.execute("""
-                UPDATE path_enum 
-                SET path = REGEXP_REPLACE(path, '^' || %s, %s)
-                WHERE path LIKE %s || '%%' AND id != %s
-            """, (node_path, node_path.rsplit("/", 2)[0] + "/", f"{node_path}", node_id))
-            
-            cur.execute("DELETE FROM path_enum WHERE id = %s", (node_id,))
-            conn.commit()
-            print(f"Node {node_id} deleted successfully without its subtree.")
+            cur.execute("SELECT id FROM path_enum WHERE path LIKE %s", (f"%/{node_id}/%",))
+            result_ = cur.fetchone()
+            if not result_:
+                print(f"Error: Node ID {node_id} is root, so the subtree cannot be reassigned.")
+                return
+            else:
+                cur.execute("""
+                    UPDATE path_enum 
+                    SET path = REGEXP_REPLACE(path, '^' || %s, %s)
+                    WHERE path LIKE %s || '%%' AND id != %s
+                """, (node_path, node_path.rsplit("/", 2)[0] + "/", f"{node_path}", node_id))
+                
+                cur.execute("DELETE FROM path_enum WHERE id = %s", (node_id,))
+                conn.commit()
+                print(f"Node {node_id} deleted successfully without its subtree.")
         except psycopg2.Error as e:
             print("Error deleting node without subtree:", e)
             conn.rollback()
