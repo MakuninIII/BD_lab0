@@ -45,13 +45,23 @@ def print_tree(conn, node_id, level=0, visited=None):
             print("Error printing tree:", e)
 
 # 1. Добавление листа
-def add_leaf(conn, title, parent_id):
-    if not is_valid_title(title):
-        print("Error: Title cannot be empty or consist only of spaces.")
-        return
+def add_leaf(conn):
+    while True:
+        title = input("Enter title of the new leaf: ")
+                    
+        if not is_valid_title(title):
+            print("Error: Title cannot be empty or consist only of spaces.")
+        else:   
+            if not title.strip().isalpha():
+                print("Error: title should only contain letters.")
+            else:
+                break
+    
 
     with conn.cursor() as cur:
         try:
+            parent_id = input("Enter parent ID: ")
+
             cur.execute("SELECT path FROM path_enum WHERE id = %s", (parent_id,))
             parent_path = cur.fetchone()
             if parent_path is None:
@@ -301,10 +311,8 @@ if __name__ == "__main__":
                 choice = choice.strip()
 
                 if choice == '1':
-                    title = input("Enter title of the new leaf: ")
-                    parent_id = input("Enter parent ID: ")
                     try:
-                        new_id = add_leaf(conn, title, int(parent_id))
+                        new_id = add_leaf(conn)
                     except ValueError:
                         print("Invalid parent ID. Please enter a valid number.")
 
