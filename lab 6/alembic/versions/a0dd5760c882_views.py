@@ -21,7 +21,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade():
     op.execute("""
-        CREATE VIEW              AS
+        CREATE VIEW artist_info AS
         SELECT 
             a.id AS artist_id,
             a.name AS artist_name,
