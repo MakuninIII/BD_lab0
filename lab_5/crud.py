@@ -94,10 +94,14 @@ def GenreDelete(conn):
 
 def GenreDeleteMany(conn):
     ids = input("Введите ID жанров для удаления через запятую: ").strip()
+    
     try:
-        ids_list = [int(x.strip()) for x in ids.split(",")]
-        ids_str = ",".join(map(str, ids_list))
-        
+        ids_list = [x.strip() for x in ids.split(",") if x.strip().isdigit()]
+        if not ids_list:
+            print("Нет корректных ID для удаления.")
+            return
+        ids_str = ",".join(ids_list)
+
         with conn.cursor() as cursor:
             cursor.execute("CALL genreDeleteMany(%s)", [ids_str])
             conn.commit()
@@ -117,7 +121,7 @@ def GenreDeleteMany(conn):
 if __name__ == "__main__":
     conn = psycopg2.connect(
         dbname="Test",
-        user="postgres",
+        user="ilya",
         password=" ",
         host="localhost"
     )

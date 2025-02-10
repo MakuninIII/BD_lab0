@@ -29,6 +29,10 @@ def upgrade() -> None:
                             RAISE EXCEPTION 'Название жанра не может быть пустой строкой или состоять только из пробелов.';
                         END IF;
                
+                                IF EXISTS (SELECT 1 FROM genre WHERE LOWER(name) = LOWER(BTRIM(name_))) THEN
+                                    RAISE EXCEPTION 'Ошибка уникальности: Жанр % уже существует.', name_;
+                                END IF;
+               
                         INSERT INTO genre(name)
                         VALUES (BTRIM(name_))
                         RETURNING id INTO new_genre_id;
