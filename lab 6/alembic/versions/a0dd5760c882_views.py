@@ -18,7 +18,6 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-#убрать {} и кавычки
 def upgrade():
     op.execute("""
         CREATE VIEW artist_info AS
@@ -40,7 +39,6 @@ def upgrade():
             a.id, a.name, a.country, a.debut_year;
     """)
 
-#null заменить на 0
     op.execute("""
         CREATE MATERIALIZED VIEW song_stats AS
         SELECT 
