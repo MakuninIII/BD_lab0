@@ -18,7 +18,7 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-
+#убрать {} и кавычки
 def upgrade():
     op.execute("""
         CREATE VIEW artist_info AS
@@ -27,7 +27,7 @@ def upgrade():
             a.name AS artist_name,
             a.country AS country,
             a.debut_year AS debut_year,
-            ARRAY_AGG(DISTINCT g.name) AS genres
+            COALESCE(STRING_AGG(DISTINCT g.name, ', '), '') AS genres
         FROM 
             artist a
         LEFT JOIN 
@@ -40,15 +40,16 @@ def upgrade():
             a.id, a.name, a.country, a.debut_year;
     """)
 
+#null заменить на 0
     op.execute("""
         CREATE MATERIALIZED VIEW song_stats AS
         SELECT 
             a.id AS artist_id,
             a.name AS artist_name,
             COUNT(s.id) AS total_songs,
-            AVG(s.duration) AS avg_duration,
-            RANK() OVER (ORDER BY AVG(s.duration) DESC) AS rank_by_duration
-        FROM 
+            COALESCE(ROUND(AVG(s.duration),1), 0) AS avg_duration,
+            RANK() OVER (ORDER BY COALESCE(AVG(s.duration), 0) DESC NULLS LAST) AS rank_by_duration
+            FROM 
             artist a
         LEFT JOIN 
             song s ON a.id = s.artist_id
